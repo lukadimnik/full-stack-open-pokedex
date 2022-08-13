@@ -40,6 +40,31 @@ jobs:
           healthcheck: 'https://pokedex-dimnik.herokuapp.com/health'
           checkstring: 'ok'
           rollbackonhealthcheckfailed: true
+      - name: Deployment successfull
+        uses: rjstone/discord-webhook-notify@v1
+        if: success()
+        with:
+          severity: info
+          avatarUrl: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png
+          description: App url
+          details: https://pokedex-dimnik.herokuapp.com/
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Deployment failed
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure()
+        with:
+          severity: error
+          avatarUrl: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png
+          details: Deployment Failed!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Deployment cancelled
+        uses: rjstone/discord-webhook-notify@v1
+        if: cancelled()
+        with:
+          severity: warn
+          avatarUrl: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png
+          details: Deployment Cancelled!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 
   tag_release:
     if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip') }}
